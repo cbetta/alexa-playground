@@ -24,11 +24,26 @@ end
 def status_of service
   case service
   when "github"
-    result = open('https://status.github.com/api/status.json').read
-    status = JSON.parse(result)['status']
-    "The status of GitHub is #{status}"
+    status_of_github
+  when "digital ocean"
+    "Sorry I am not set up to deal with Digital Ocean just yet"
   end
 end
+
+def status_of_github
+  result = open('https://status.github.com/api/last-message.json').read
+  status = JSON.parse(result)
+  level = status['status']
+  body = status['body']
+
+  case level
+  when "good"
+    "GitHub is fully operational. #{body}"
+  else
+    "GitHub is experiencing some #{level} issues. #{body}"
+  end
+end
+
 
 def respond answer
   response = AlexaRubykit::Response.new
