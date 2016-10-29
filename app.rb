@@ -31,7 +31,7 @@ end
 
 def status_of service
   case service
-  when "github"
+  when "github" || "git hub"
     status_of_github
   when "digital ocean"
     status_of_digital_ocean
