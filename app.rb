@@ -2,8 +2,17 @@ require 'sinatra'
 require 'alexa_rubykit'
 
 post '/metastatus' do
-  puts params.inspect
+  query_json = JSON.parse(request.body.read.to_s)
+  query = AlexaRubykit.build_request(query_json)
+
+  process(query) if query.type == 'StatusCheck'
+end
+
+private
+
+def process query
   response = AlexaRubykit::Response.new
-  response.add_speech('Ruby is running ready!')
+  puts query.slots.inspect
+  response.add_speech('Checking now')
   response.build_response
 end
