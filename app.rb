@@ -1,5 +1,7 @@
 require 'sinatra'
 require 'alexa_rubykit'
+require 'json'
+require 'open-uri'
 
 post '/metastatus' do
   query_json = JSON.parse(request.body.read.to_s)
