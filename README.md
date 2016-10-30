@@ -1,3 +1,3 @@
-# Beta Alexa
+# Betta Alexa
 
 An Alexa playground.
