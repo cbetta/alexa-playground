@@ -8,7 +8,12 @@ post '/metastatus' do
   query_json = JSON.parse(request.body.read.to_s)
   query = AlexaRubykit.build_request(query_json)
 
-  process(query) if query.type == 'INTENT_REQUEST'
+  case query.type
+  when 'INTENT_REQUEST'
+    intent_request(query)
+  else
+    ask_for_service_name
+  end
 end
 
 get '/github' do
@@ -21,14 +26,20 @@ end
 
 private
 
-def process query
+def ask_for_service_name is_new = true
+  message = "What service would you like to check?"
+  message = "I'm sorry I did not get what service you meant. " + message unless is_new
+  respond message, false
+end
+
+def intent_request query
   case query.intent['name']
   when "StatusCheck"
     puts query.slots.inspect
     service = query.slots['Service']['value']
 
     if service == nil
-      respond "What service would you like to check?", false
+      ask_for_service_name(query.session.new)
     else
       respond status_of(service)
     end
@@ -37,10 +48,14 @@ end
 
 def status_of service
   case service
-  when "github.com"
+  when "github", "git hub", "git hub dot com", "github dot com"
     status_of_github
-  when "digitalocean"
+  when "digitalocean", "digital ocean"
     status_of_digital_ocean
+  when "stop"
+    nil
+  else
+    "Service not recognised. We currently support GitHub and Digital ocean only"
   end
 end
 
