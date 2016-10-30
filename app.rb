@@ -12,7 +12,7 @@ post '/metastatus' do
 end
 
 get '/github' do
-  respond status_of_github
+  respond status_of('git hub')
 end
 
 get '/digital_ocean' do
@@ -24,16 +24,22 @@ private
 def process query
   case query.intent['name']
   when "StatusCheck"
+    puts query.slots.inspect
     service = query.slots['Service']['value']
-    respond status_of(service)
+
+    if service == nil
+      respond "What service would you like to check?", false
+    else
+      respond status_of(service)
+    end
   end
 end
 
 def status_of service
   case service
-  when "github", "git hub"
+  when "github.com"
     status_of_github
-  when "digital ocean"
+  when "digitalocean"
     status_of_digital_ocean
   end
 end
@@ -65,8 +71,8 @@ def status_of_digital_ocean
   end
 end
 
-def respond answer
+def respond answer, end_session = true
   response = AlexaRubykit::Response.new
-  response.add_speech(answer)
-  response.build_response
+  response.say_response(answer)
+  response.build_response(end_session)
 end
