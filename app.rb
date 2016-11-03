@@ -32,6 +32,12 @@ def ask_for_service_name is_new = true
   respond message, false
 end
 
+def provide_info_and_ask_for_service_name is_new = true
+  message = "Betta Status is a simple tool for checking if your favorite developer tools are up and running without issues. We currently support GitHub and Digital Ocean. "
+  message += "What service would you like to check?"
+  respond message, false
+end
+
 def intent_request query
   case query.intent['name']
   when "StatusCheck"
@@ -40,6 +46,8 @@ def intent_request query
 
     if service == nil
       ask_for_service_name(query.session.new)
+    elsif service == 'help'
+      provide_info_and_ask_for_service_name(query.session.new)
     else
       respond status_of(service)
     end
@@ -52,7 +60,7 @@ def status_of service
     status_of_github
   when "digitalocean", "digital ocean"
     status_of_digital_ocean
-  when "stop"
+  when "stop", "cancel"
     nil
   else
     "Service not recognised. We currently support GitHub and Digital ocean only"
