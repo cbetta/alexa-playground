@@ -41,16 +41,17 @@ end
 def intent_request query
   case query.intent['name']
   when "StatusCheck"
-    puts query.slots.inspect
     service = query.slots['Service']['value']
 
     if service == nil
       ask_for_service_name(query.session.new)
-    elsif service == 'help'
-      provide_info_and_ask_for_service_name(query.session.new)
     else
       respond status_of(service)
     end
+  when "AMAZON.HelpIntent"
+    provide_info_and_ask_for_service_name(query.session.new)
+  when "AMAZON.StopIntent", "AMAZON.CancelIntent"
+    respond nil
   end
 end
 
@@ -60,8 +61,6 @@ def status_of service
     status_of_github
   when "digitalocean", "digital ocean"
     status_of_digital_ocean
-  when "stop", "cancel"
-    nil
   else
     "Service not recognised. We currently support GitHub and Digital ocean only"
   end
