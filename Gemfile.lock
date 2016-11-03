@@ -4,6 +4,7 @@ GEM
     alexa_rubykit (1.1.0)
       bundler (~> 1.7)
       rake (~> 10.0)
+    alexa_verifier (0.1.0)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
@@ -21,6 +22,7 @@ PLATFORMS
 
 DEPENDENCIES
   alexa_rubykit
+  alexa_verifier
   shotgun
   sinatra
 

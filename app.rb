@@ -3,16 +3,25 @@ require 'alexa_rubykit'
 require 'json'
 require 'open-uri'
 require 'rss'
+require 'alexa_verifier'
 
 post '/metastatus' do
-  query_json = JSON.parse(request.body.read.to_s)
-  query = AlexaRubykit.build_request(query_json)
+  begin
+    body = request.body.read
+    verify_alexa(body)
 
-  case query.type
-  when 'INTENT_REQUEST'
-    intent_request(query)
-  else
-    ask_for_service_name
+    query_json = JSON.parse(body.to_s)
+    query = AlexaRubykit.build_request(query_json)
+
+    case query.type
+    when 'INTENT_REQUEST'
+      intent_request(query)
+    else
+      ask_for_service_name
+    end
+  rescue AlexaVerifier::VerificationError => error
+    status 400
+      ""
   end
 end
 
@@ -25,6 +34,16 @@ get '/digital_ocean' do
 end
 
 private
+
+def verify_alexa body
+  verifier = AlexaVerifier.new
+
+  verifier.verify!(
+    request.env['HTTP_SIGNATURECERTCHAINURL'],
+    request.env['HTTP_SIGNATURE'],
+    body
+  )
+end
 
 def ask_for_service_name is_new = true
   message = "What service would you like to check?"
