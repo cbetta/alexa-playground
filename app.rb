@@ -26,11 +26,15 @@ post '/metastatus' do
 end
 
 get '/github' do
-  respond status_of('git hub')
+  status_of_github
 end
 
 get '/digital_ocean' do
   status_of_digital_ocean
+end
+
+get '/twitter' do
+  status_of_twitter
 end
 
 private
@@ -80,6 +84,8 @@ def status_of service
     status_of_github
   when "digitalocean", "digital ocean"
     status_of_digital_ocean
+  when "twitter"
+    status_of_twitter
   else
     "Service not recognised. We currently support GitHub and Digital ocean only"
   end
@@ -109,6 +115,23 @@ def status_of_digital_ocean
     "Digital Ocean is fully operational. The latest update is: #{latest_update}"
   else
     "Digital Ocean is having some issues. The latest update is: #{latest_update}"
+  end
+end
+
+def status_of_twitter
+  response = open('https://api.io.watchmouse.com/synth/current/39657/folder/7617?fields=cur;info').read
+  status = JSON.parse(response)
+
+  errors = status['result'].map do |item|
+    next if item['cur']['status'] == 0
+    item['info']['name']
+  end.compact
+
+
+  if errors.empty?
+    "Twitter is fully operational"
+  else
+    "Twitter is having some issues. The affected endpoints are: #{errors.join(', ')}"
   end
 end
 
