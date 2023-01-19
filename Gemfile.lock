@@ -10,7 +10,7 @@ GEM
     oga (2.7)
       ast
       ruby-ll (~> 2.1)
-    rack (1.6.4)
+    rack (1.6.13)
     rack-protection (1.5.3)
       rack
     rake (10.5.0)
